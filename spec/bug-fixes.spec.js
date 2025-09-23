@@ -1,8 +1,6 @@
 import should from 'should';
-import rally from '../lib/index';
+import RestApi from '../lib/restapi';
 import sinon from 'sinon';
-
-const RestApi = rally.createClient;
 
 describe('Bug Fixes', () => {
 
