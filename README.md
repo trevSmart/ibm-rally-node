@@ -145,6 +145,11 @@ Rally Software does not actively maintain or support this toolkit. If you have a
 
 Please view the [User Guide](https://github.com/RallyTools/rally-node/wiki/User-Guide) in the attached wiki.
 
+## Performance Guide
+For best practices and performance optimizations, see [PERFORMANCE.md](PERFORMANCE.md).
+
+**New in v2.1.3+**: Enhanced query performance with memory optimizations, early exit logic, and new streaming methods (`queryStream`, `queryBatch`) for handling large datasets efficiently.
+
 ## Developer Guide
 
 Please view the [Developer Guide](https://github.com/RallyTools/rally-node/wiki/Developer-Guide) in the attached wiki.
