@@ -492,14 +492,14 @@ describe('RestApi', () => {
 
       beforeEach(() => {
         get.restore();
-        sinon.stub(Request.default.prototype, 'get', (options) => {
+        get = sinon.stub(Request.default.prototype, 'get').callsFake((options) => {
           const start = options.qs.start;
           const pageSize = options.qs.pagesize;
           return Promise.resolve({Errors: [], Warnings: [], StartIndex: start, TotalResultCount: results.length, Results: results.slice(start - 1, start - 1 + pageSize)});
         });
       });
       afterEach(()=> {
-        Request.default.prototype.get.restore();
+        get.restore();
       });
 
       it('should return 1 page if no limit specified', async ( ) => {
