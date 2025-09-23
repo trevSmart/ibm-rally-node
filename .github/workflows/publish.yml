@@ -51,6 +51,7 @@ jobs:
             echo "Error: NPM_TOKEN is not set. Cannot publish to npm registry.";
             exit 1;
           fi
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
           npm publish --registry https://registry.npmjs.org/ --access public
 
       - name: Publish to GitHub Packages
