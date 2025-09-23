@@ -1,4 +1,3 @@
-import should from 'should';
 import sinon from 'sinon';
 import RestApi from '../lib/restapi';
 
@@ -38,7 +37,7 @@ describe('RestApi Performance Optimizations', () => {
     it('should handle large result sets efficiently with early exit', async () => {
       const pageSize = 100;
       const limit = 250;
-      
+
       // Mock responses for multiple pages
       requestGetStub.onCall(0).resolves(generateMockResults(1, pageSize, 10000));
       requestGetStub.onCall(1).resolves(generateMockResults(101, pageSize, 10000));
@@ -60,7 +59,7 @@ describe('RestApi Performance Optimizations', () => {
 
     it('should optimize page size for small limits', async () => {
       const limit = 5;
-      
+
       requestGetStub.onCall(0).resolves(generateMockResults(1, limit, 1000));
 
       await restApi.query({
@@ -78,7 +77,7 @@ describe('RestApi Performance Optimizations', () => {
     it('should handle limit reached exactly at page boundary', async () => {
       const pageSize = 100;
       const limit = 200;
-      
+
       requestGetStub.onCall(0).resolves(generateMockResults(1, pageSize, 10000));
       requestGetStub.onCall(1).resolves(generateMockResults(101, pageSize, 10000));
 
@@ -97,7 +96,7 @@ describe('RestApi Performance Optimizations', () => {
     it('should stream results page by page', async () => {
       const pages = [];
       const pageInfos = [];
-      
+
       requestGetStub.onCall(0).resolves({
         Errors: [], Warnings: [], StartIndex: 1, TotalResultCount: 250,
         Results: Array.from({length: 100}, (_, i) => ({_ref: `/defect/${i + 1}`}))
@@ -124,24 +123,24 @@ describe('RestApi Performance Optimizations', () => {
       pages[0].should.have.length(100);
       pages[1].should.have.length(100);
       pages[2].should.have.length(50);
-      
+
       pageInfos[0].startIndex.should.eql(1);
       pageInfos[1].startIndex.should.eql(101);
       pageInfos[2].startIndex.should.eql(201);
-      
+
       result.totalProcessed.should.eql(250);
       result.completed.should.eql(true);
     });
 
     it('should support early termination via callback return value', async () => {
       const pages = [];
-      
+
       // Setup the stubs to resolve immediately
       const firstPageResponse = {
         Errors: [], Warnings: [], StartIndex: 1, TotalResultCount: 1000,
         Results: Array.from({length: 100}, (_, i) => ({_ref: `/defect/${i + 1}`}))
       };
-      
+
       const secondPageResponse = {
         Errors: [], Warnings: [], StartIndex: 101, TotalResultCount: 1000,
         Results: Array.from({length: 100}, (_, i) => ({_ref: `/defect/${i + 101}`}))
@@ -168,7 +167,7 @@ describe('RestApi Performance Optimizations', () => {
 
       console.log(`Final pages count: ${pages.length}`);
       console.log(`Request stub call count: ${requestGetStub.callCount}`);
-      
+
       // Should process exactly 2 pages and stop
       pages.should.have.length(2);
       requestGetStub.callCount.should.eql(2); // No third request should be made
@@ -180,7 +179,7 @@ describe('RestApi Performance Optimizations', () => {
   describe('queryBatch method', () => {
     it('should process results in specified batch sizes', async () => {
       const batches = [];
-      
+
       requestGetStub.onCall(0).resolves({
         Errors: [], Warnings: [], StartIndex: 1, TotalResultCount: 350,
         Results: Array.from({length: 200}, (_, i) => ({_ref: `/defect/${i + 1}`}))
@@ -208,7 +207,7 @@ describe('RestApi Performance Optimizations', () => {
       batches[2].size.should.eql(75);
       batches[3].size.should.eql(75);
       batches[4].size.should.eql(50); // remainder
-      
+
       result.totalProcessed.should.eql(350);
       result.totalBatches.should.eql(5);
     });

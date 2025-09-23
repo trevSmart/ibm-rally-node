@@ -53,6 +53,7 @@ describe('Bug Fixes', () => {
         Warnings: []
       }));
 
+      // eslint-disable-next-line no-unused-vars
       const result = await restApi.query({
         type: 'defect',
         limit: -5, // Negative limit should be ignored
@@ -77,6 +78,7 @@ describe('Bug Fixes', () => {
       }));
 
       // Test with pageSize=0 (edge case)
+      // eslint-disable-next-line no-unused-vars
       const result = await restApi.query({
         type: 'defect',
         pageSize: 0, // This should be corrected to 1
@@ -104,6 +106,7 @@ describe('Bug Fixes', () => {
         type: 'defect',
         pageSize: 0, // This should be corrected to 1
         limit: 5
+      // eslint-disable-next-line no-unused-vars
       }, (pageResults, pageInfo) => {
         pageCallbackCalled = true;
         return false; // Stop after first page

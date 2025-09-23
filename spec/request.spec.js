@@ -1,4 +1,3 @@
-import should from 'should';
 import Request from '../lib/request';
 import axios from 'axios';
 import sinon from 'sinon';
