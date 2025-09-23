@@ -36,23 +36,85 @@ describe('Bug Fixes', () => {
 
       // Should return 0 results when limit is 0
       result.Results.should.have.length(0);
-      get.callCount.should.eql(1);
-      
-      // Check that pagesize was set to 0 in the request
-      const args = get.firstCall.args[0];
-      args.qs.pagesize.should.eql(0);
+      get.callCount.should.eql(0); // Should not make any API calls due to early return
+
+      // Verify the result structure
+      result.StartIndex.should.eql(1);
+      result.PageSize.should.eql(0);
+      result.TotalResultCount.should.eql(0);
     });
 
-    it('should handle limit=0 correctly in pagination logic', async () => {
-      // This tests the pagination condition fix
-      const options = { limit: 0, pageSize: 200 };
-      const shouldPaginate = options.limit !== undefined;
-      
-      shouldPaginate.should.eql(true);
-      
-      // The min calculation should use 0, not fallback to pageSize
-      const pageSize = options.limit !== undefined ? Math.min(options.pageSize, options.limit) : options.pageSize;
-      pageSize.should.eql(0);
+    it('should handle negative limit values safely', async () => {
+      // Mock response with some results
+      get.returns(Promise.resolve({
+        Results: [{ _ref: '/defect/1' }, { _ref: '/defect/2' }],
+        StartIndex: 1,
+        PageSize: 2,
+        TotalResultCount: 100,
+        Errors: [],
+        Warnings: []
+      }));
+
+      const result = await restApi.query({
+        type: 'defect',
+        limit: -5, // Negative limit should be ignored
+        pageSize: 10
+      });
+
+      // Should make API call with corrected pageSize
+      get.callCount.should.eql(1);
+      const args = get.firstCall.args[0];
+      args.qs.pagesize.should.eql(10); // Should use original pageSize, not negative limit
+    });
+
+    it('should ensure optimalPageSize is never 0 or negative', async () => {
+      // Mock response
+      get.returns(Promise.resolve({
+        Results: [{ _ref: '/defect/1' }],
+        StartIndex: 1,
+        PageSize: 1,
+        TotalResultCount: 1,
+        Errors: [],
+        Warnings: []
+      }));
+
+      // Test with pageSize=0 (edge case)
+      const result = await restApi.query({
+        type: 'defect',
+        pageSize: 0, // This should be corrected to 1
+        limit: 5
+      });
+
+      get.callCount.should.eql(1);
+      const args = get.firstCall.args[0];
+      args.qs.pagesize.should.eql(1); // Should be corrected to minimum of 1
+    });
+
+    it('should handle optimalPageSize calculation correctly for queryStream', async () => {
+      // Mock response
+      get.returns(Promise.resolve({
+        Results: [{ _ref: '/defect/1' }],
+        StartIndex: 1,
+        PageSize: 1,
+        TotalResultCount: 1,
+        Errors: [],
+        Warnings: []
+      }));
+
+      let pageCallbackCalled = false;
+      await restApi.queryStream({
+        type: 'defect',
+        pageSize: 0, // This should be corrected to 1
+        limit: 5
+      }, (pageResults, pageInfo) => {
+        pageCallbackCalled = true;
+        return false; // Stop after first page
+      });
+
+      get.callCount.should.eql(1);
+      const args = get.firstCall.args[0];
+      args.qs.pagesize.should.eql(1); // Should be corrected to minimum of 1
+      pageCallbackCalled.should.eql(true);
     });
   });
 
@@ -94,8 +156,8 @@ describe('Bug Fixes', () => {
 
     it('should reject add() with invalid ref', async () => {
       try {
-        await restApi.add({ 
-          ref: 'invalid-ref', 
+        await restApi.add({
+          ref: 'invalid-ref',
           collection: 'tasks',
           data: [{ _ref: '/task/123' }]
         });
@@ -107,8 +169,8 @@ describe('Bug Fixes', () => {
 
     it('should reject remove() with invalid ref', async () => {
       try {
-        await restApi.remove({ 
-          ref: 'invalid-ref', 
+        await restApi.remove({
+          ref: 'invalid-ref',
           collection: 'tasks',
           data: [{ _ref: '/task/123' }]
         });
