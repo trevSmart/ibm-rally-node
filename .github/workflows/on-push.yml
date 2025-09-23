@@ -1,4 +1,6 @@
 name: on-push
+permissions:
+  contents: read
 
 on:
   push:
