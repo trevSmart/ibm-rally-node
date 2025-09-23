@@ -1,6 +1,6 @@
 import should from 'should';
-import rally from '../../lib/index';
-import Query from '../../lib/util/query';
+import rally from '../../lib/index.js';
+import Query from '../../lib/util/query.js';
 
 const queryUtils = rally.util.query;
 

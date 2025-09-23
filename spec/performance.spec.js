@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import RestApi from '../lib/restapi';
+import RestApi from '../lib/restapi.js';
 
 describe('RestApi Performance Optimizations', () => {
   let restApi, requestGetStub;

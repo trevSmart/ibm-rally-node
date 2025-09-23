@@ -1,7 +1,7 @@
 import should from 'should';
-import RestApi from '../lib/restapi';
-import * as Request from '../lib/request';
-import { where } from '../lib/util/query';
+import RestApi from '../lib/restapi.js';
+import * as Request from '../lib/request.js';
+import { where } from '../lib/util/query.js';
 import sinon from 'sinon';
 import packageJson from '../package.json';
 

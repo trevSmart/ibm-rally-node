@@ -1,4 +1,4 @@
-import Request from '../lib/request';
+import Request from '../lib/request.js';
 import axios from 'axios';
 import sinon from 'sinon';
 import _ from 'lodash';

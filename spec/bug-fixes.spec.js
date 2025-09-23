@@ -1,5 +1,5 @@
 import should from 'should';
-import RestApi from '../lib/restapi';
+import RestApi from '../lib/restapi.js';
 import sinon from 'sinon';
 
 describe('Bug Fixes', () => {
