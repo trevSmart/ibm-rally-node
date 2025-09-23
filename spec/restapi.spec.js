@@ -24,85 +24,93 @@ describe('RestApi', () => {
 
   describe('#constructor', () => {
 
-    beforeEach(() => {
-      sinon.stub(Request, 'default');
-    });
-
-    afterEach(() => {
-      Request.default.restore();
-    });
+    function makeCtorSpy() {
+      return sinon.spy(function(options) {
+        this._options = options;
+      });
+    }
 
     it('initializes request with default server and api version', () => {
-      const restApi = new RestApi();
-      const initArgs = Request.default.firstCall.args[0];
+      const Ctor = makeCtorSpy();
+      const restApi = new RestApi({ RequestClass: Ctor });
+      const initArgs = Ctor.firstCall.args[0];
       initArgs.server.should.eql('https://rally1.rallydev.com');
       initArgs.apiVersion.should.eql('v2.0');
-      restApi.request.should.be.exactly(Request.default.firstCall.returnValue);
+      restApi.request.should.be.exactly(Ctor.firstCall.thisValue);
     });
 
     it('initializes request with specified server and api version', () => {
+      const Ctor = makeCtorSpy();
       const restApi = new RestApi({
+        RequestClass: Ctor,
         server: 'http://www.google.com',
         apiVersion: 5
       });
-      const initArgs = Request.default.firstCall.args[0];
+      const initArgs = Ctor.firstCall.args[0];
       initArgs.server.should.eql('http://www.google.com');
       initArgs.apiVersion.should.eql(5);
-      restApi.request.should.be.exactly(Request.default.firstCall.returnValue);
+      restApi.request.should.be.exactly(Ctor.firstCall.thisValue);
     });
 
     it('initializes request with default auth options', () => {
+      const Ctor = makeCtorSpy();
       process.env.RALLY_USERNAME = 'user';
       process.env.RALLY_PASSWORD = 'pass';
-      const restApi = new RestApi();
-      const requestOptions = Request.default.firstCall.args[0].requestOptions;
+      const restApi = new RestApi({ RequestClass: Ctor });
+      const requestOptions = Ctor.firstCall.args[0].requestOptions;
       requestOptions.auth.user.should.eql('user');
       requestOptions.auth.pass.should.eql('pass');
-      restApi.request.should.be.exactly(Request.default.firstCall.returnValue);
+      restApi.request.should.be.exactly(Ctor.firstCall.thisValue);
     });
 
     it('initializes request with specified auth options', () => {
+      const Ctor = makeCtorSpy();
       const restApi = new RestApi({
+        RequestClass: Ctor,
         user: 'user1',
         pass: 'pass1'
       });
-      const requestOptions = Request.default.firstCall.args[0].requestOptions;
+      const requestOptions = Ctor.firstCall.args[0].requestOptions;
       requestOptions.auth.user.should.eql('user1');
       requestOptions.auth.pass.should.eql('pass1');
-      restApi.request.should.be.exactly(Request.default.firstCall.returnValue);
+      restApi.request.should.be.exactly(Ctor.firstCall.thisValue);
     });
 
     it('initializes request with correct integration headers', () => {
-      const restApi = new RestApi();
-      const initArgs = Request.default.firstCall.args[0];
+      const Ctor = makeCtorSpy();
+      const restApi = new RestApi({ RequestClass: Ctor });
+      const initArgs = Ctor.firstCall.args[0];
       initArgs.requestOptions.headers.should.eql({
         'X-RallyIntegrationLibrary': `Customized Rally REST Toolkit for Node.js v${packageJson.version}`,
         'X-RallyIntegrationName': 'Customized Rally REST Toolkit for Node.js',
         'X-RallyIntegrationVendor': 'Rally Software, Inc.',
         'X-RallyIntegrationVersion': packageJson.version
       });
-      restApi.request.should.be.exactly(Request.default.firstCall.returnValue);
+      restApi.request.should.be.exactly(Ctor.firstCall.thisValue);
     });
 
     it('initializes request with default api key options', () => {
+      const Ctor = makeCtorSpy();
       const key = '!#$!@#%161345!%1346@#$^#$';
       process.env.RALLY_API_KEY = key;
-      const restApi = new RestApi();
-      const requestOptions = Request.default.firstCall.args[0].requestOptions;
+      const restApi = new RestApi({ RequestClass: Ctor });
+      const requestOptions = Ctor.firstCall.args[0].requestOptions;
       requestOptions.headers.zsessionid.should.eql(key);
       requestOptions.jar.should.eql(false);
-      restApi.request.should.be.exactly(Request.default.firstCall.returnValue);
+      restApi.request.should.be.exactly(Ctor.firstCall.thisValue);
     });
 
     it('initializes request with specified api key options', () => {
+      const Ctor = makeCtorSpy();
       const key = '!#$!@#%161345!%1346@#$^#$';
       const restApi = new RestApi({
+        RequestClass: Ctor,
         apiKey: key
       });
-      const requestOptions = Request.default.firstCall.args[0].requestOptions;
+      const requestOptions = Ctor.firstCall.args[0].requestOptions;
       requestOptions.headers.zsessionid.should.eql(key);
       requestOptions.jar.should.eql(false);
-      restApi.request.should.be.exactly(Request.default.firstCall.returnValue);
+      restApi.request.should.be.exactly(Ctor.firstCall.thisValue);
     });
   });
 
