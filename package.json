@@ -30,7 +30,7 @@
     "url": "https://github.com/RallyTools/rally-node.git"
   },
   "dependencies": {
-    "babel-runtime": "6.11.6",
+    "babel-runtime": "6.26.0",
     "lodash": "^4.17.11",
     "request": "^2.88.0"
   },
