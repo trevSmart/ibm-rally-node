@@ -3,7 +3,7 @@ import RestApi from '../lib/restapi.js';
 import * as Request from '../lib/request.js';
 import { where } from '../lib/util/query.js';
 import sinon from 'sinon';
-import packageJson from '../package.json';
+import packageJson from '../package.json' with { type: 'json' };
 
 describe('RestApi', () => {
   let del, get, post, put;
