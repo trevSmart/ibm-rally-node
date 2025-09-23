@@ -1,0 +1,51 @@
+name: Publish Package
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build package
+        run: npm run build
+
+      - name: Publish to npm registry
+        if: success()
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NPM_TOKEN" ]; then
+            echo "NPM_TOKEN is not set. Skipping npm publish.";
+            exit 0;
+          fi
+          npm publish --registry https://registry.npmjs.org/ --access public
+
+      - name: Publish to GitHub Packages
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Ensure registry points to GitHub Packages for the scope
+          npm config set @trevsmart:registry https://npm.pkg.github.com
+          npm config set //npm.pkg.github.com/:_authToken=$GITHUB_TOKEN
+          npm publish --registry https://npm.pkg.github.com/

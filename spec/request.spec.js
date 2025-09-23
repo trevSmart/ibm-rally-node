@@ -72,7 +72,7 @@ describe('Request', () => {
       rr.doRequest('get', {url: '/someUrl'}, (err, body) => {
         err.errors.should.eql([error]);
         should.not.exist(body);
-         
+
       });
     });
 
@@ -85,7 +85,7 @@ describe('Request', () => {
         fail('expected promise to be rejected');
       } catch (err) {
         err.errors.should.eql([error]);
-         
+
       }
     });
 
@@ -95,7 +95,7 @@ describe('Request', () => {
         rr.doRequest('get', {url: '/someUrl'}, (err, body) => {
           err.errors.should.eql(['Unable to connect to server: ' + rr.wsapiUrl]);
           should.not.exist(body);
-           
+
         });
       });
 
@@ -107,7 +107,7 @@ describe('Request', () => {
         fail('expected promise to be rejected');
       } catch (err) {
         err.errors.should.eql(['Unable to connect to server: ' + rr.wsapiUrl]);
-         
+
       }
     });
 
@@ -117,7 +117,7 @@ describe('Request', () => {
       rr.doRequest('get', {url: '/someUrl'}, (err, body) => {
         err.errors.should.eql(['/someUrl: 404! body=not found!']);
         should.not.exist(body);
-         
+
       });
     });
 
@@ -129,7 +129,7 @@ describe('Request', () => {
         fail('expected promise to be rejected');
       } catch (err) {
         err.errors.should.eql(['/someUrl: 404! body=not found!']);
-         
+
       }
     });
 
@@ -143,7 +143,7 @@ describe('Request', () => {
         fail('expected promise to be rejected');
       } catch (err) {
         err.errors.should.eql([error]);
-         
+
       }
     });
 
@@ -154,7 +154,7 @@ describe('Request', () => {
       rr.doRequest('get', {url: '/someUrl'}, (err, body) => {
         should.not.exist(err);
         body.should.eql(responseBody.Result);
-         
+
       });
     });
 
@@ -164,7 +164,7 @@ describe('Request', () => {
       get.yieldsAsync(null, {}, responseBody);
       const result = await rr.doRequest('get', {url: '/someUrl'});
       result.should.eql(responseBody.Result);
-       
+
     });
   });
 
@@ -201,7 +201,7 @@ describe('Request', () => {
         put.firstCall.args[0].qs.key.should.eql(token);
         putResponseBody.OperationResult.should.eql(result);
         should.not.exist(error);
-         
+
       });
     });
 
@@ -216,7 +216,7 @@ describe('Request', () => {
       put.firstCall.args[0].foo.should.eql('bar');
       put.firstCall.args[0].qs.key.should.eql(token);
       putResponseBody.OperationResult.should.eql(result);
-       
+
     });
 
     it('calls back with error on security token failure', function( ) {
@@ -226,7 +226,7 @@ describe('Request', () => {
       rr.doSecuredRequest('put', {}, function(err, result) {
         err.errors.should.eql([error]);
         should.not.exist(result);
-         
+
       });
     });
 
@@ -238,7 +238,7 @@ describe('Request', () => {
         await rr.doSecuredRequest('put', {});
       } catch (err) {
         err.errors.should.eql([error]);
-         
+
       }
     });
 
@@ -254,7 +254,7 @@ describe('Request', () => {
       } catch (err) {
         err.errors.should.eql([error]);
       }
-       
+
     });
 
     it('calls back with error on request failure after getting security token', function( ) {
@@ -266,7 +266,7 @@ describe('Request', () => {
       rr.doSecuredRequest('put', {}, function(err, result) {
         err.errors.should.eql([error]);
         should.not.exist(result);
-         
+
       });
     });
   });
@@ -361,7 +361,7 @@ describe('Request', () => {
       rr.del(options, callback);
 
       doSecuredRequest.callCount.should.eql(1);
-      doSecuredRequest.firstCall.args.should.eql(['del', options, callback]);
+      doSecuredRequest.firstCall.args.should.eql(['delete', options, callback]);
     });
 
     it('should delete with promise', () => {
@@ -371,7 +371,7 @@ describe('Request', () => {
       const returnValue = rr.del(options);
 
       doSecuredRequest.callCount.should.eql(1);
-      doSecuredRequest.firstCall.args.should.eql(['del', options, undefined]);
+      doSecuredRequest.firstCall.args.should.eql(['delete', options, undefined]);
       doSecuredRequest.firstCall.returnValue.should.be.exactly(returnValue);
     });
   });

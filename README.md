@@ -6,19 +6,39 @@ A Node.js client library for interacting with the Rally REST API.
 
 ## Installation
 
-The toolkit is distributed as an npm module named rally. Simply add to an existing package.json or install from the command line.
+The toolkit is distributed as an npm module. You can install it from GitHub Packages or npm registry.
+
+### From GitHub Packages (Recommended)
+
+First, configure npm to use GitHub Packages for the `@trevsmart` scope:
 
 ```bash
-npm install rally
+# Create or update .npmrc file
+echo "@trevsmart:registry=https://npm.pkg.github.com" >> .npmrc
+echo "//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}" >> .npmrc
+```
+
+Then install the package:
+
+```bash
+npm install @trevsmart/rally-node
+```
+
+**Note**: You need a GitHub Personal Access Token with `read:packages` permission. Set it as `GITHUB_TOKEN` environment variable.
+
+### From npm registry (Legacy)
+
+```bash
+npm install ibm-rally-node
 ```
 
 ## Quick Start
 
 ```javascript
-const rally = require('rally');
+import RestApi from '@trevsmart/rally-node';
 
 // Create a client
-const client = rally({
+const client = new RestApi({
   apiKey: 'your-api-key',
   server: 'https://rally1.rallydev.com'
 });
@@ -42,9 +62,9 @@ client.query({
 ### Creating a Client
 
 ```javascript
-const rally = require('rally');
+import RestApi from '@trevsmart/rally-node';
 
-const client = rally({
+const client = new RestApi({
   apiKey: 'your-api-key',        // Required: Your Rally API key
   server: 'https://rally1.rallydev.com', // Required: Rally server URL
   workspace: 'workspace-ref',    // Optional: Default workspace

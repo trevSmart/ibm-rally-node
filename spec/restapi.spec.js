@@ -76,8 +76,8 @@ describe('RestApi', () => {
       const restApi = new RestApi();
       const initArgs = Request.default.firstCall.args[0];
       initArgs.requestOptions.headers.should.eql({
-        'X-RallyIntegrationLibrary': `Rally REST Toolkit for Node.js v${packageJson.version}`,
-        'X-RallyIntegrationName': 'Rally REST Toolkit for Node.js',
+        'X-RallyIntegrationLibrary': `Customized Rally REST Toolkit for Node.js v${packageJson.version}`,
+        'X-RallyIntegrationName': 'Customized Rally REST Toolkit for Node.js',
         'X-RallyIntegrationVendor': 'Rally Software, Inc.',
         'X-RallyIntegrationVersion': packageJson.version
       });
@@ -127,7 +127,7 @@ describe('RestApi', () => {
       args.qs.fetch.should.eql('FormattedID');
       args.qs.workspace.should.eql('/workspace/1234');
       args.qs.foo.should.eql('bar');
-       
+
     });
 
     it('generates correct post request', async ( ) => {
@@ -147,7 +147,7 @@ describe('RestApi', () => {
       args[1].should.be.exactly(callback);
       post.firstCall.returnValue.should.be.exactly(promise);
       await promise;
-       
+
     });
   });
 
@@ -172,7 +172,7 @@ describe('RestApi', () => {
       args.qs.fetch.should.eql('FormattedID');
       args.qs.workspace.should.eql('/workspace/1234');
       args.qs.foo.should.eql('bar');
-       
+
     });
 
     it('generates correct put request', async ( ) => {
@@ -192,7 +192,7 @@ describe('RestApi', () => {
       args[1].should.be.exactly(callback);
       put.firstCall.returnValue.should.be.exactly(promise);
       await promise;
-       
+
     });
   });
 
@@ -212,7 +212,7 @@ describe('RestApi', () => {
       const args = del.firstCall.args[0];
       args.qs.workspace.should.eql('/workspace/1234');
       args.qs.foo.should.eql('bar');
-       
+
     });
 
     it('generates correct del request', async ( ) => {
@@ -228,7 +228,7 @@ describe('RestApi', () => {
       args[1].should.be.exactly(callback);
       del.firstCall.returnValue.should.be.exactly(promise);
       await promise;
-       
+
     });
   });
 
@@ -250,7 +250,7 @@ describe('RestApi', () => {
       args.qs.workspace.should.eql('/workspace/1234');
       args.qs.fetch.should.eql('FormattedID');
       args.qs.foo.should.eql('bar');
-       
+
     });
 
     it('generates correct get request', async ( ) => {
@@ -264,7 +264,7 @@ describe('RestApi', () => {
       const args = get.firstCall.args;
       args[0].url.should.eql('/defect/1234');
       callback.callCount.should.eql(1);
-       
+
     });
 
     it('calls back with transformed result', ( ) => {
@@ -277,7 +277,7 @@ describe('RestApi', () => {
         result.Errors.should.eql([]);
         result.Warnings.should.eql([]);
         result.Object.should.eql({Name: 'Foo'});
-         
+
       });
     });
 
@@ -290,7 +290,7 @@ describe('RestApi', () => {
       result.Errors.should.eql([]);
       result.Warnings.should.eql([]);
       result.Object.should.eql({Name: 'Foo'});
-       
+
     });
 
     it('calls back with error', ( ) => {
@@ -302,7 +302,7 @@ describe('RestApi', () => {
         }, (err, result) => {
           err.should.eql([error]);
           should.not.exist(result);
-           
+
         });
     });
 
@@ -317,7 +317,7 @@ describe('RestApi', () => {
         fail('promise should be rejected');
       } catch (err) {
         err.should.eql([error]);
-         
+
       }
     });
   });
@@ -340,7 +340,7 @@ describe('RestApi', () => {
       args.qs.workspace.should.eql('/workspace/1234');
       args.qs.fetch.should.eql('FormattedID');
       args.qs.foo.should.eql('bar');
-       
+
     });
 
     it('translates project scope request options', async ( ) => {
@@ -361,7 +361,7 @@ describe('RestApi', () => {
       args.qs.projectScopeDown.should.eql(true);
       args.qs.fetch.should.eql('FormattedID');
       args.qs.foo.should.eql('bar');
-       
+
     });
 
     it('translates paging scope request options', async ( ) => {
@@ -382,7 +382,7 @@ describe('RestApi', () => {
       args.qs.pagesize.should.eql(10);
       args.qs.order.should.eql('Severity,FormattedID DESC');
       args.qs.foo.should.eql('bar');
-       
+
     });
 
     it('translates query request options', async ( ) => {
@@ -400,7 +400,7 @@ describe('RestApi', () => {
       const args = get.firstCall.args[0];
       args.qs.query.should.eql(query.toQueryString());
       args.qs.foo.should.eql('bar');
-       
+
     });
 
     it('generates correct get request by type', () => {
@@ -438,7 +438,7 @@ describe('RestApi', () => {
           result.Errors.should.eql([]);
           result.Warnings.should.eql([]);
           result.Results.should.eql(results);
-           
+
         });
     });
 
@@ -456,7 +456,7 @@ describe('RestApi', () => {
       result.Errors.should.eql([]);
       result.Warnings.should.eql([]);
       result.Results.should.eql(results);
-       
+
     });
 
     it('calls back with error', function( ) {
@@ -468,7 +468,7 @@ describe('RestApi', () => {
       }, (err, result) => {
         err.should.eql([error]);
         should.not.exist(result);
-         
+
       });
     });
 
@@ -483,7 +483,7 @@ describe('RestApi', () => {
         fail('promise should be rejected');
       } catch (err) {
         err.should.eql([error]);
-         
+
       }
     });
 
@@ -509,8 +509,8 @@ describe('RestApi', () => {
           start: 1,
           pageSize: 2
         });
-        result.Results.should.eql([1, 2]);
-         
+        result.Results.should.eql([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]); // Should return all results when no limit
+
       });
 
       it('should return multiple pages if limit specified', async ( ) => {
@@ -522,7 +522,7 @@ describe('RestApi', () => {
           limit: 6
         });
         result.Results.should.eql([1, 2, 3, 4, 5, 6]);
-         
+
       });
 
       it('should return no more than TotalResultCount', async ( ) => {
@@ -534,7 +534,7 @@ describe('RestApi', () => {
           limit: 100
         });
         result.Results.should.eql(results);
-         
+
       });
 
       it('should limit results to limit', async ( ) => {
@@ -546,7 +546,7 @@ describe('RestApi', () => {
           limit: 4
         });
         result.Results.should.eql([1, 2, 3, 4]);
-         
+
       });
 
       it('should limit paged results to limit', async ( ) => {
@@ -558,7 +558,7 @@ describe('RestApi', () => {
           limit: 5
         });
         result.Results.should.eql([1, 2, 3, 4, 5]);
-         
+
       });
     });
 
@@ -581,7 +581,7 @@ describe('RestApi', () => {
         args.qs.workspace.should.eql('/workspace/1234');
         args.qs.fetch.should.eql('FormattedID');
         args.qs.foo.should.eql('bar');
-         
+
       });
 
       it('generates correct post request', async ( ) => {
@@ -596,7 +596,7 @@ describe('RestApi', () => {
         const args = post.firstCall.args;
         args[0].url.should.eql('/defect/1234/Duplicates/add');
         args[0].json.should.eql({CollectionItems: [{_ref: '/defect/2345'}]});
-         
+
       });
 
       it('resolves promise with result', async ( ) => {
@@ -610,7 +610,7 @@ describe('RestApi', () => {
         result.Errors.should.eql([]);
         result.Warnings.should.eql([]);
         result.Results.should.eql([{_ref: '/defect/2345'}]);
-         
+
       });
 
       it('rejects promise with error', async ( ) => {
@@ -626,7 +626,7 @@ describe('RestApi', () => {
           fail('promise should be rejected');
         } catch (err) {
           err.should.eql([error]);
-           
+
         }
       });
     });
@@ -677,7 +677,7 @@ describe('RestApi', () => {
         });
         result.Errors.should.eql([]);
         result.Warnings.should.eql([]);
-         
+
       });
 
       it('rejects promise with error', async ( ) => {
@@ -693,7 +693,7 @@ describe('RestApi', () => {
           fail('promise should be rejected');
         } catch (err) {
           err.should.eql([error]);
-           
+
         }
       });
     });

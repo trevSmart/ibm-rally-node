@@ -1,5 +1,5 @@
 {
-  "name": "ibm-rally-node",
+  "name": "@trevsmart/rally-node",
   "version": "0.0.1",
   "type": "module",
   "description": "Customized Rally REST Toolkit for Node.js",
@@ -71,5 +71,8 @@
   "bugs": {
     "url": "https://github.com/trevSmart/rally-node/issues"
   },
-  "homepage": "https://github.com/trevSmart/rally-node"
+  "homepage": "https://github.com/trevSmart/rally-node",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
 }
