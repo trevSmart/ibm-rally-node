@@ -67,3 +67,4 @@ Esto puede ocurrir si:
 ### Error: "need auth" al publicar a npm
 
 Esto indica que el token de npm no es válido o ha expirado. Genera un nuevo token y actualiza el secreto.
+
