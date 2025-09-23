@@ -62,7 +62,7 @@ jobs:
       - name: Build package
         run: npm run build
 
-      - name: Configure npm registry
+      - name: Configure npm registry for publishing
         if: success()
         uses: actions/setup-node@v4
         with:
@@ -74,9 +74,28 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          # Temporarily switch to unscoped name for npmjs (scope not configured in npm)
-          node -e "const fs=require('fs');const p=require('./package.json');const orig=p.name;p.name='ibm-rally-node';fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n');console.log('renamed',orig,'->',p.name);"
+          # Check if NPM_TOKEN is available
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "NPM_TOKEN secret is not configured. Skipping npm publication."
+            echo "To enable npm publishing, add NPM_TOKEN secret to repository settings."
+            exit 0
+          fi
+          
+          # Temporarily modify package.json for npm publication
+          node -e "
+            const fs = require('fs');
+            const p = require('./package.json');
+            const orig = p.name;
+            p.name = 'ibm-rally-node';
+            delete p.publishConfig;
+            fs.writeFileSync('package.json', JSON.stringify(p, null, 2) + '\n');
+            console.log('renamed', orig, '->', p.name);
+            console.log('removed publishConfig for npm publication');
+          "
+          
+          # Publish to npm
           npm publish --access public
+          
           # Restore original package.json
           git checkout -- package.json
 
@@ -86,7 +105,6 @@ jobs:
         with:
           node-version: 20
           registry-url: https://npm.pkg.github.com/
-          # Set scope for scoped package names
           scope: '@trevsmart'
 
       - name: Publish to GitHub Packages
@@ -94,4 +112,13 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Restore publishConfig for GitHub Packages
+          node -e "
+            const fs = require('fs');
+            const p = require('./package.json');
+            p.publishConfig = { registry: 'https://npm.pkg.github.com' };
+            fs.writeFileSync('package.json', JSON.stringify(p, null, 2) + '\n');
+            console.log('restored publishConfig for GitHub Packages');
+          "
+          
           npm publish

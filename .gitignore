@@ -17,3 +17,5 @@ node_modules
 *.iml
 dist
 .env
+tmp/workflow-diagram.mmd
+tmp/workflow-diagram.png
