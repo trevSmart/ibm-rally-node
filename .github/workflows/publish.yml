@@ -43,25 +43,36 @@ jobs:
       - name: Build package
         run: npm run build
 
-      - name: Publish to npm registry
+      - name: Configure npm registry
         if: success()
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          if [ -z "$NPM_TOKEN" ]; then
-            echo "Error: NPM_TOKEN is not set. Cannot publish to npm registry.";
-            exit 1;
-          fi
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-          # Temporarily switch to unscoped name for npmjs (scope not configured in npm)
-          node -e "const fs=require('fs');const p=require('./package.json');const orig=p.name;p.name='ibm-rally-node';fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n');console.log('renamed',orig,'->',p.name);"
-          npm publish --registry https://registry.npmjs.org/ --access public
-          # Restore original package.json
-          git checkout -- package.json
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
 
-      - name: Publish to GitHub Packages
+      - name: Publish to npm registry
         if: success()
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          npm publish --registry https://npm.pkg.github.com/
+          # Temporarily switch to unscoped name for npmjs (scope not configured in npm)
+          node -e "const fs=require('fs');const p=require('./package.json');const orig=p.name;p.name='ibm-rally-node';fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n');console.log('renamed',orig,'->',p.name);"
+          npm publish --access public
+          # Restore original package.json
+          git checkout -- package.json
+
+      - name: Configure GitHub Packages registry
+        if: success()
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://npm.pkg.github.com/
+          # Set scope for scoped package names
+          scope: '@trevsmart'
+
+      - name: Publish to GitHub Packages
+        if: success()
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm publish
