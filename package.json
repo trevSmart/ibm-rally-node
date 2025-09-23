@@ -35,7 +35,7 @@
     "node": ">=14.0.0"
   },
   "scripts": {
-    "build": "cross-env BABEL_ENV=commonjs babel lib --out-dir dist",
+    "build": "cross-env BABEL_ENV=esmodules babel lib --out-dir dist",
     "lint": "eslint .",
     "prepublish": "npm run build",
     "prepublishOnly": "npm run build",

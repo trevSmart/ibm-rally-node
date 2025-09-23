@@ -5,7 +5,7 @@ on:
     types: [published]
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
@@ -14,6 +14,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.target_commitish }}
+          fetch-depth: 0
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -25,6 +28,16 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+      - name: Bump patch version
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          npm version patch --no-git-tag-version
+          npm install --package-lock-only || true
+          git add package.json package-lock.json || true
+          git commit -m "chore(release): bump patch version [skip ci]" || echo "No changes to commit"
+          git push
 
       - name: Build package
         run: npm run build
