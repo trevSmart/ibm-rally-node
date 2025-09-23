@@ -53,7 +53,11 @@ jobs:
             exit 1;
           fi
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+          # Temporarily switch to unscoped name for npmjs (scope not configured in npm)
+          node -e "const fs=require('fs');const p=require('./package.json');const orig=p.name;p.name='rally-node-trevsmart';fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n');console.log('renamed',orig,'->',p.name);"
           npm publish --registry https://registry.npmjs.org/ --access public
+          # Restore original package.json
+          git checkout -- package.json
 
       - name: Publish to GitHub Packages
         if: success()
