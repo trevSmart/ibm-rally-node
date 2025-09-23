@@ -1,6 +1,6 @@
 {
   "name": "@trevsmart/rally-node",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "description": "Customized Rally REST Toolkit for Node.js",
   "keywords": [
