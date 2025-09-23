@@ -1,6 +1,6 @@
 {
   "name": "@trevsmart/ibm-rally-node",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "type": "module",
   "description": "Customized Rally REST Toolkit for Node.js",
   "keywords": [
