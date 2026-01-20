@@ -5,24 +5,40 @@ on:
   release:
     types: [published]
 
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish"
+        required: false
+        type: string
+      dry-run:
+        description: "Dry run (no actual publish to NPM)"
+        required: false
+        type: boolean
+        default: false
+
 permissions:
   contents: write
   packages: write
+  id-token: write
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment: copilot
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.release.target_commitish }}
           fetch-depth: 0
 
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 22
+          cache: "npm"
+          registry-url: https://registry.npmjs.org/
 
       - name: Install dependencies
         run: npm ci
@@ -48,25 +64,30 @@ jobs:
 
           echo "New version will be: $NEW_VERSION"
 
-          # Update package.json with new version
-          npm version $NEW_VERSION --no-git-tag-version
+          # Update package.json with new version only if local version differs
+          LOCAL_VERSION=$(node -e "console.log(require('./package.json').version)")
+          if [ "$LOCAL_VERSION" = "$NEW_VERSION" ]; then
+            echo "Local package.json already at $NEW_VERSION, skipping version bump"
+          else
+            npm version $NEW_VERSION --no-git-tag-version
 
-          # Update package-lock.json
-          npm install --package-lock-only
+            # Update package-lock.json
+            npm install --package-lock-only
 
-          # Commit and push changes
-          git add package.json package-lock.json
-          git commit -m "chore(release): bump version to $NEW_VERSION [skip ci]" || echo "No changes to commit"
-          git push
+            # Commit and push changes
+            git add package.json package-lock.json
+            git commit -m "chore(release): bump version to $NEW_VERSION [skip ci]" || echo "No changes to commit"
+            git push
+          fi
 
       - name: Build package
         run: npm run build
 
       - name: Configure npm registry for publishing
         if: success()
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 22
           registry-url: https://registry.npmjs.org/
 
       - name: Publish to npm registry
@@ -76,9 +97,9 @@ jobs:
         run: |
           # Check if NPM_TOKEN is available
           if [ -z "$NODE_AUTH_TOKEN" ]; then
-            echo "NPM_TOKEN secret is not configured. Skipping npm publication."
-            echo "To enable npm publishing, add NPM_TOKEN secret to repository settings."
-            exit 0
+            echo "ERROR: NPM_TOKEN secret is not configured. Aborting npm publication." >&2
+            echo "Add NPM_TOKEN secret to repository settings or configure OIDC/session-based auth." >&2
+            exit 1
           fi
           
           # Temporarily modify package.json for npm publication
@@ -92,20 +113,29 @@ jobs:
             console.log('renamed', orig, '->', p.name);
             console.log('removed publishConfig for npm publication');
           "
-          
+
+          # Ensure npm is recent enough for OIDC/session-based publishing
+          npm i -g npm@latest || true
+
           # Publish to npm
-          npm publish --access public
+          if [ "${{ inputs.dry-run }}" = "true" ]; then
+            echo -e "${YELLOW}Mode dry-run: Simulant publicació a NPM...${NC}"
+            npm publish --access public --dry-run
+            echo -e "${YELLOW}⚠️  Paquet NO publicat (dry-run)${NC}"
+          else
+            npm publish --access public
+          fi
           
           # Restore original package.json
           git checkout -- package.json
 
       - name: Configure GitHub Packages registry
         if: success()
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 22
           registry-url: https://npm.pkg.github.com/
-          scope: '@trevsmart'
+          scope: "@trevsmart"
 
       - name: Publish to GitHub Packages
         if: success()
