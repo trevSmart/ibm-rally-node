@@ -48,7 +48,7 @@
     "url": "git+https://github.com/trevSmart/ibm-rally-node.git"
   },
   "dependencies": {
-    "@babel/runtime": "^7.28.4",
+    "@babel/runtime": "^7.28.6",
     "axios": "^1.12.2",
     "lodash": "^4.17.21"
   },
